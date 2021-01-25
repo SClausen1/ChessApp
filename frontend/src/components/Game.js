@@ -6,46 +6,78 @@ import boardInit from '../helpers/BoardInit';
 
 export default class Game extends React.Component {
   constructor() {
-    var squareT = boardInit();
     super();
     this.state = {
-      squares: squareT,
-      player: 0,
-      history: [],
-      whiteTurn : true 
+      squares: boardInit(),
+      player: 1,
+      history: ['NewGame'],
+      souceClick: -1,
+      whiteTurn : true
     };
-    if(this.state.player === 0){
-      this.state.squares = squareT.reverse();
-    }
+
   }
 
   handleClick(i) {
-    // const history = this.state.history.slice(0, this.state.stepNumber + 1);
-    // const current = history[history.length - 1];
-    // const squares = current.squares.slice();
-    // if (calculateWinner(squares) || squares[i]) {
-    //   return;
-    // }
-    // squares[i] = this.state.xIsNext ? "X" : "O";
-    // this.setState({
-    //   history: history.concat([
-    //     {
-    //       squares: squares
-    //     }
-    //   ]),
-    //   stepNumber: history.length,
-    //   xIsNext: !this.state.xIsNext
-    // });
+    const squares = this.state.squares
+    const squareOccupied = Boolean(squares[i]);
+    const src = this.state.sourceClick;
+    const dest = i;
+    const player = this.state.player;
+    const opponent = player === 1 ? 2 : 1;
+    const srcPiece = squares[src];
+
+    if(squareOccupied && src === -1){
+      if(this.state.player === squares[i].player){
+        squares[i].style = { ...squares[i].style, backgroundColor: "RGB(111,143,114)" }; // Emerald from http://omgchess.blogspot.com/2015/09/chess-board-color-schemes.html
+        this.setState({souceClick : i});
+      }
+      return;
+    }
+    
+    
+    srcPiece.style = { ...squares[this.state.souceClick].style, backgroundColor: "" };
+     
+    if(srcPiece.isThisMovePossible(src, i) && pathIsClear(squares, src, dest) && !isMate(squares, opponent)){
+      if(srcPiece.type === 'ki'&& Math.abs(src - dest) > 1 &&srcPiece){
+        //check if castle is possible, king is not in check ,intermediate squares are safe and unocupied, niether piece has moved
+      }
+      if(srcPiece.type === 'p' &&( (dest % 7=== 0 || dest % 9 === 0) && !squares[dest]) ){
+        var lastMove = this.state.history[this.state.history.length - 1];
+        if(lastMove === ){
+
+        }
+      }
+
+      if(squareOccupied && squares[i].player !== this.state.player){
+        squares[i] = srcPiece;
+        squares[this.state.souceClick] = null;
+        var moveName = srcPiece.type.concat();
+        this.state.history.push(moveName);
+      }
+      checkWin(squares, player);
+    }
+
+    //move capture en passant
+    //castle
+    //if is check for not player 
+    this.setState({souceClick : -1})
   }
 
   render() {
+    // rotates board 180
+    if(this.state.player === 1){
+     playerSquares =this.state.squares.reverse();
+    }
+    else{
+      playerSquares =this.state.squares;
+    }
 
     return (
       <div>
         <div className="game">
           <div className="game-board">
             <Board
-              squares={this.state.squares}
+              squares={playerSquares}
               onClick={(i) => this.handleClick(i)}
             />
           </div>
@@ -116,24 +148,55 @@ export default class Game extends React.Component {
 }
 
 // ========================================
-
-
-function calculateWinner(squares) {
-  // const lines = [
-  //   [0, 1, 2],
-  //   [3, 4, 5],
-  //   [6, 7, 8],
-  //   [0, 3, 6],
-  //   [1, 4, 7],
-  //   [2, 5, 8],
-  //   [0, 4, 8],
-  //   [2, 4, 6]
-  // ];
-  // for (let i = 0; i < lines.length; i++) {
-  //   const [a, b, c] = lines[i];
-  //   if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-  //     return squares[a];
-  //   }
-  // }
-  // return null;
+function getKingPosition(squares, player){
+  return squares.reduce( (acc, curr, i) => acc || ( (curr && curr.player === player && curr.type === 'ki' && i), null) );
+  
 }
+function pathIsClear(squares, src, dest){
+  if(squares.src.type === 'kn'){
+    return true;
+  }
+  var distance = Math.abs(src-dest);
+  var start = Math.min(src,dest);
+  if((src - dest) % 9 === 0){
+    for(let i = 1;( i * 9 + start) < 64; i++){
+      if(squares[start+i * 9]){
+        return false;
+      }
+    }
+    return true;
+  }
+  else if((src - dest) % 7 === 0){
+    for(let i = 1;( i * 7 + start) < 64; i++){
+      if(squares[start+i * 7]){
+        return false;
+      }
+    }
+    return true;
+  }
+  else if((src - dest) % 8 === 0){
+    for(let i = 1;( i * 8 + start) < 64; i++){
+      if(squares[start+i * 8]){
+        return false;
+      }
+    }
+    return true;
+  }
+  else if(Math.floor(src/8) ===  Math.floor(dest / 8 )){
+    for(let i = 1; i < distance; i++){
+      if(squares[start+i]){
+        return false;
+      }
+    }
+    return true;
+  }
+  return false;
+}
+
+function isMate(squares, attackingPlayer){
+  var opponent = attackingPlayer === 1 ? 2 : 1; 
+  var enemyKing = getKingPosition(squares, opponent);
+  return squares.reduce( (acc, curr, i) => acc || 
+  ( (curr && curr.player === attackingPlayer && curr.isMovePossible(i, enemyKing) && pathIsClear(squares,i,enemyKing) ) , false) );
+}
+
