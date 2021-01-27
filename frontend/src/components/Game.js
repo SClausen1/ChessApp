@@ -12,7 +12,8 @@ export default class Game extends React.Component {
       player: 1,
       history: ['NewGame'],
       souceClick: -1,
-      whiteTurn : true
+      whiteTurn : true,
+      gameStatus : 'nominal'
     };
 
   }
@@ -38,28 +39,40 @@ export default class Game extends React.Component {
     srcPiece.style = { ...squares[this.state.souceClick].style, backgroundColor: "" };
      
     if(srcPiece.isThisMovePossible(src, i) && pathIsClear(squares, src, dest) && !isMate(squares, opponent)){
+      //check if castle is possible
       if(srcPiece.type === 'ki'&& Math.abs(src - dest) > 1 &&srcPiece){
         //check if castle is possible, king is not in check ,intermediate squares are safe and unocupied, niether piece has moved
       }
-      if(srcPiece.type === 'p' &&( (dest % 7=== 0 || dest % 9 === 0) && !squares[dest]) ){
+
+      //checks for en passant
+      else if(srcPiece.type === 'p' &&( (dest % 7=== 0 || dest % 9 === 0) && !squares[dest]) ){
         var lastMove = this.state.history[this.state.history.length - 1];
-        if(lastMove === ){
+        if(lastMove === algebreicNotation(dest )){
 
         }
       }
 
-      if(squareOccupied && squares[i].player !== this.state.player){
+      //takes a peice
+      else if(squareOccupied && squares[i].player !== this.state.player){
+        // add i square piece to fallen soldiers
         squares[i] = srcPiece;
         squares[this.state.souceClick] = null;
-        var moveName = srcPiece.type.concat();
+        var moveName = srcPiece.type.concat(algebreicNotation(i));
         this.state.history.push(moveName);
       }
-      checkWin(squares, player);
-    }
 
-    //move capture en passant
-    //castle
-    //if is check for not player 
+    
+      //just move
+      else{
+        squares[i] = srcPiece;
+        squares[this.state.souceClick] = null;
+      }
+      if(isCheck(squares, player)){
+        if(isMate()){
+          this.state.gameStatus = 'player ' + player + 'wins';
+        }
+      }
+    }r 
     this.setState({souceClick : -1})
   }
 
@@ -200,3 +213,9 @@ function isMate(squares, attackingPlayer){
   ( (curr && curr.player === attackingPlayer && curr.isMovePossible(i, enemyKing) && pathIsClear(squares,i,enemyKing) ) , false) );
 }
 
+function algebreicNotation(i){
+  var columnLetters = {'a':0, 'b':1, 'c':2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7};
+  var col = columnLetters[i % 8];
+  var row = i / 8;
+  return col.concat(String(row));
+}
