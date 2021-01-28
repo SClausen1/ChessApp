@@ -6,8 +6,8 @@ export default class Pawn extends Piece{
         this.firstMove = null;
     }
 
-    setFirstMove(placesMoved){
-        this.firstMove = placesMoved;
+    setFirstMove(placeMoved){
+        this.firstMove = placeMoved;
     }
 
     isMovePossible(src, dest, squares) {
@@ -23,7 +23,7 @@ export default class Pawn extends Piece{
             }
             return true;
         }
-        else if((src-dest == 16 && !this.firstMove)){
+        else if((src-dest === 16 && !this.firstMove)){
             this.setFirstMove(2);
         }
         else{

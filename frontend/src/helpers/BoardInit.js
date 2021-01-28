@@ -5,7 +5,7 @@ import Pawn from '../pieces/Pawn';
 import Queen from '../pieces/Queen';
 import Rook from '../pieces/Rook';
 
-export default function boardInit(){
+export default function boardInit(player){
     const squares = Array(64).fill(null);
     for(let i = 0; i<8; i++){
         squares[8+i] = new Pawn(1);
@@ -32,5 +32,8 @@ export default function boardInit(){
     squares[60] = new King(2);
     squares[59] = new Queen(2);
 
+    if(player === 1){
+      squares = [...squares].reverse();
+    }
     return squares;
 } 

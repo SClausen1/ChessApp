@@ -7,90 +7,113 @@ import boardInit from '../helpers/BoardInit';
 export default class Game extends React.Component {
   constructor() {
     super();
+    // you need a second player for this model to work. Board rotates but thats a feature not a bug
     this.state = {
-      squares: boardInit(),
+      squares: boardInit(player),
       player: 1,
       history: ['NewGame'],
       souceClick: -1,
-      whiteTurn : true,
+      playerTurn : 1,
       gameStatus : 'nominal'
     };
 
   }
 
   handleClick(i) {
-    const squares = this.state.squares
-    const squareOccupied = Boolean(squares[i]);
-    const src = this.state.sourceClick;
+    
+    const squares = [...this.state.squares]
+    var src = this.state.souceClick;
     const dest = i;
     const player = this.state.player;
-    const opponent = player === 1 ? 2 : 1;
+    const opponent =( player === 1 ? 2 : 1);
     const srcPiece = squares[src];
 
-    if(squareOccupied && src === -1){
-      if(this.state.player === squares[i].player){
-        squares[i].style = { ...squares[i].style, backgroundColor: "RGB(111,143,114)" }; // Emerald from http://omgchess.blogspot.com/2015/09/chess-board-color-schemes.html
+    if(src === -1){
+      if(player=== squares[i].player){
+        squares[i].style = ({...squares[i].style, backgroundColor: "RGB(111,143,114)" }); // Emerald from http://omgchess.blogspot.com/2015/09/chess-board-color-schemes.html
         this.setState({souceClick : i});
       }
       return;
+      
     }
-    
-    
-    srcPiece.style = { ...squares[this.state.souceClick].style, backgroundColor: "" };
+    else{
+      
+      squares[src].style = { ...squares[src].style, backgroundColor: "" };
      
-    if(srcPiece.isThisMovePossible(src, i) && pathIsClear(squares, src, dest) && !isMate(squares, opponent)){
-      //check if castle is possible
-      if(srcPiece.type === 'ki'&& Math.abs(src - dest) > 1 &&srcPiece){
-        //check if castle is possible, king is not in check ,intermediate squares are safe and unocupied, niether piece has moved
-      }
-
-      //checks for en passant
-      else if(srcPiece.type === 'p' &&( (dest % 7=== 0 || dest % 9 === 0) && !squares[dest]) ){
-        var lastMove = this.state.history[this.state.history.length - 1];
-        if(lastMove === algebreicNotation(dest )){
-
+      if(srcPiece.isMovePossible(src, i) && pathIsClear(squares, src, dest) && !isMate(squares.splice(src,1,null), opponent)){
+        //check if castle is possible
+        if(srcPiece.type === 'ki'&& Math.abs(src - dest) > 1 &&srcPiece){
+          //check if castle is possible, king is not in check ,intermediate squares are safe and unocupied, niether piece has moved
         }
-      }
 
-      //takes a peice
-      else if(squareOccupied && squares[i].player !== this.state.player){
-        // add i square piece to fallen soldiers
-        squares[i] = srcPiece;
-        squares[this.state.souceClick] = null;
+        //checks for en passant
+        else if(srcPiece.type === 'p' &&( (dest % 7=== 0 || dest % 9 === 0) && !squares[dest]) ){
+          var lastMove = this.state.history[this.state.history.length - 1];
+          if(this.player === 1 && squares[dest + 8].type === 'p'){
+            if(squares[dest + 8].firstMove === 2){
+              squares[dest + 8] = null;
+              squares[dest] = i;
+              squares[i] = null;
+            }
+          }
+          else if(this.player === 2 && squares[dest - 8].type === 'p'){
+            if(squares[dest-8].firstMove === 2){
+              squares[dest - 8] = null;
+              squares[dest] = i;
+              squares[i] = null;
+            }
+          }
+          else{
+            this.setState({souceClick : -1});
+            return;
+          }
+          
+        }
+
+        //takes a peice
+        else if(squares[i].player === this.state.player){
+          // add i square piece to fallen soldiers
+          squares[i] = srcPiece;
+          squares[this.state.souceClick] = null;
+        }
+
+      
+        //just move
+        else{
+          squares[i] = srcPiece;
+          squares[this.state.souceClick] = null;
+        }
         var moveName = srcPiece.type.concat(algebreicNotation(i));
-        this.state.history.push(moveName);
+        if(isCheck(squares, player)){
+          if(isMate(squares, player)){
+            this.setState({gameStatus : 'Player ' + player + 'wins'});
+          }
+        }
+
       }
 
-    
-      //just move
-      else{
-        squares[i] = srcPiece;
-        squares[this.state.souceClick] = null;
-      }
-      if(isCheck(squares, player)){
-        if(isMate()){
-          this.state.gameStatus = 'player ' + player + 'wins';
-        }
-      }
-    }r 
-    this.setState({souceClick : -1})
+      
+      this.setState(oldState => ({
+        squares,
+        player: opponent,
+        history : [...oldState.history , moveName],
+        souceClick : -1,
+        playerTurn : opponent,
+        gameStatus : 'nominal'
+      }));
+    }
   }
 
   render() {
     // rotates board 180
-    if(this.state.player === 1){
-     playerSquares =this.state.squares.reverse();
-    }
-    else{
-      playerSquares =this.state.squares;
-    }
+
 
     return (
       <div>
         <div className="game">
           <div className="game-board">
             <Board
-              squares={playerSquares}
+              squares={this.state.squares}
               onClick={(i) => this.handleClick(i)}
             />
           </div>
@@ -125,39 +148,6 @@ export default class Game extends React.Component {
 
     );
   }
-    // const moves = history.map((step, move) => {
-    //   const desc = move ?
-    //     'Go to move #' + move :
-    //     'Go to game start';
-    //   return (
-    //     <li key={move}>
-    //       <button onClick={() => this.jumpTo(move)}>{desc}</button>
-    //     </li>
-    //   );
-    // });
-
-    // let status;
-    // if (winner) {
-    //   status = "Winner: " + winner;
-    // } else {
-    //   status = "Next player: " + (this.state.xIsNext ? "X" : "O");
-    // }
-
-    // return (
-    //   <div className="game">
-    //     <div className="game-board">
-    //       <Board
-    //         squares={current.squares}
-    //         onClick={i => this.handleClick(i)}
-    //       />
-    //     </div>
-    //     <div className="game-info">
-    //       <div>{status}</div>
-    //       <ol>{moves}</ol>
-    //     </div>
-    //   </div>
-    // );
- // }
 }
 
 // ========================================
@@ -206,16 +196,38 @@ function pathIsClear(squares, src, dest){
   return false;
 }
 
-function isMate(squares, attackingPlayer){
+function isCheck(squares, attackingPlayer){
   var opponent = attackingPlayer === 1 ? 2 : 1; 
   var enemyKing = getKingPosition(squares, opponent);
   return squares.reduce( (acc, curr, i) => acc || 
   ( (curr && curr.player === attackingPlayer && curr.isMovePossible(i, enemyKing) && pathIsClear(squares,i,enemyKing) ) , false) );
+}
+function isMate(squares, attackingPlayer){
+  var opponent = attackingPlayer === 1 ? 2 : 1; 
+  var enemyKing = getKingPosition(squares, opponent);
+  for(let i = -1; i < 2; i++){
+    for(let j = -1; j < 2; j++){
+    squares[enemyKing + (i*8 + j)] = squares[enemyKing];
+    squares[enemyKing] = null;
+      if(!isCheck(squares,attackingPlayer)){
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 function algebreicNotation(i){
   var columnLetters = {'a':0, 'b':1, 'c':2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7};
   var col = columnLetters[i % 8];
   var row = i / 8;
-  return col.concat(String(row));
+  return String(col).concat(String(row));
+}
+
+module.exports = {
+  getKingPosition,
+  isCheck,
+  isMate,
+  pathIsClear,
+  algebreicNotation
 }

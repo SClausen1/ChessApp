@@ -1,14 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
 import Game from './components/Game';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
  
   <Game 
-  player={0}
+  player={1}
   />,
   document.getElementById('root')
 );
