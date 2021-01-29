@@ -1,4 +1,4 @@
-import boardInit from '../helpers/BoardInit';
+import boardInit from '../helpers/BoardInit.js';
 
 squares = boardInit();
 const getKingPosition = require('./getKingPosition');
