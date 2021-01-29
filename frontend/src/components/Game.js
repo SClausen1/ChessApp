@@ -217,9 +217,9 @@ function isMate(squares, attackingPlayer){
 }
 
 function algebreicNotation(i){
-  var columnLetters = {'a':0, 'b':1, 'c':2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7};
+  var columnLetters = {0 : 'a', 1 : 'b', 2 : 'c', 3 : 'd', 4: 'e', 5: 'f', 6: 'g', 7: 'h'};
   var col = columnLetters[i % 8];
-  var row = i / 8;
+  var row = 1+ Math.floor(i / 8);
   return String(col).concat(String(row));
 }
 
