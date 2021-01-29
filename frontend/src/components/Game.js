@@ -152,8 +152,7 @@ export default class Game extends React.Component {
 
 // ========================================
 function getKingPosition(squares, player){
-  return squares.reduce( (acc, curr, i) => acc || ( (curr && curr.player === player && curr.type === 'ki' && i), null) );
-  
+  return squares.reduce( (acc, curr, i) => acc || (curr && curr.player === player && curr.type === 'ki' && i), null);  
 }
 function pathIsClear(squares, src, dest){
   if(squares.src.type === 'kn'){
