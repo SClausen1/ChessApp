@@ -1,5 +1,5 @@
 # Chess App
-This repo contains a work in progress chess web application. I am using this project 
+This repo contains a work in progress chess web application. I am using this project to better learn web technologies and gain familiarity with AWS.
 
 <h2>Project Goals</h2>
 
