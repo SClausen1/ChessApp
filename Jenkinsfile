@@ -1,8 +1,7 @@
 pipeline {
     agent none
 
-
-    parallel{
+    stages {
         stage('Frontend'){
             agent{
                 dockerfile {
@@ -57,6 +56,6 @@ pipeline {
                 }
             }
         }
-    }
 
+    }
 }
