@@ -4,6 +4,7 @@ pipeline {
     stages {
         stage('Frontend'){
             agent{
+                label 'frontend'
                 dockerfile {
                     dir 'frontend'
                     args '-v ${PWD}:/app \
