@@ -5,12 +5,12 @@ import Board from './Board.js';
 import boardInit from '../helpers/BoardInit';
 
 export default class Game extends React.Component {
-  constructor() {
+  constructor(currentPlayer) {
     super();
     // you need a second player for this model to work. Board rotates but thats a feature not a bug
     this.state = {
-      squares: boardInit(player),
-      player: 1,
+      squares: boardInit(currentPlayer),
+      player: currentPlayer,
       history: ['NewGame'],
       souceClick: -1,
       playerTurn : 1,
