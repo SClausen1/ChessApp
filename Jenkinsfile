@@ -34,6 +34,7 @@ pipeline {
         }
         stage('Backend'){
             agent{
+                label 'backend'
                 dockerfile{
                     dir 'backend'
                 }
