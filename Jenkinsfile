@@ -1,21 +1,18 @@
 pipeline {
-    agent any
+    agent none
 
     stages {
-        when{
-            branch 'master'
-        }
         parallel{
-            agent{
-                dockerfile {
-                    dir 'frontend'
-                    args '-v ${PWD}:/app \
-                            -v /app/node_modules \
-                            -p 3000:3000 \
-                            -e CHOKIDAR_USEPOLLING=true'
-                }
-            }
             stage('Frontend'){
+                agent{
+                    dockerfile {
+                        dir 'frontend'
+                        args '-v ${PWD}:/app \
+                                -v /app/node_modules \
+                                -p 3000:3000 \
+                                -e CHOKIDAR_USEPOLLING=true'
+                    }
+                }
                 stages{
                     stage('Build Fronted') {
                     
@@ -35,12 +32,12 @@ pipeline {
                     }
                 }
             }
-            agent{
-                dockerfile{
-                    dir 'backend'
-                }
-            }
             stage('Backend'){
+                agent{
+                    dockerfile{
+                        dir 'backend'
+                    }
+                }
                 stages{
                     stage('Build Backend') {
                     
