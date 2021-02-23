@@ -1,7 +1,7 @@
 pipeline {
     agent none
 
-    stages {
+    node {
         stage('Frontend'){
             agent{
                 label 'frontend'
@@ -32,6 +32,8 @@ pipeline {
                 }
             }
         }
+    }
+    node {
         stage('Backend'){
             agent{
                 label 'backend'
