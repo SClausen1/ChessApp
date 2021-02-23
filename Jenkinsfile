@@ -1,12 +1,13 @@
 pipeline {
     agent none
 
-    node {
+    parallel {
         stage('Frontend'){
             agent{
                 label 'frontend'
                 dockerfile {
                     dir 'frontend'
+
                     args '-v ${PWD}:/app \
                             -v /app/node_modules \
                             -p 3000:3000 \
@@ -32,11 +33,8 @@ pipeline {
                 }
             }
         }
-    }
-    node {
         stage('Backend'){
             agent{
-                label 'backend'
                 dockerfile{
                     dir 'backend'
                 }
