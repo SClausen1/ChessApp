@@ -3,14 +3,14 @@ node {
     agent{
         label 'frontend'
         dockerfile {
-        dir 'frontend'
+            dir 'frontend'
 
-        args '-v ${PWD}:/app \
-                -v /app/node_modules \
-                -p 3000:3000 \
-                -e CHOKIDAR_USEPOLLING=true'
+            args '-v ${PWD}:/app \
+                    -v /app/node_modules \
+                    -p 3000:3000 \
+                    -e CHOKIDAR_USEPOLLING=true'
+        }
     }
-
     stage('Build Fronted') {
     
         steps {
@@ -28,6 +28,7 @@ node {
         }
     }
 }
+
 
 node{
     agent{
