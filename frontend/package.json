@@ -5,11 +5,14 @@
   "version": "0.1.0",
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.9",
-    "@testing-library/react": "^11.2.3",
+    "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^12.6.0",
+    "babel-jest": "^26.6.3",
+    "jest": "^26.6.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-scripts": "4.0.1",
+    "ts-jest": "^26.5.4",
     "web-vitals": "^0.2.4"
   },
   "scripts": {
@@ -17,6 +20,11 @@
     "build": "react-scripts build",
     "test": "jest",
     "eject": "react-scripts eject"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.[t|j]sx?$": "babel-jest"
+    }
   },
   "eslintConfig": {
     "extends": [
@@ -49,5 +57,7 @@
   "bugs": {
     "url": "https://github.com/SClausen1/MySite/issues"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@babel/preset-env": "^7.13.12"
+  }
 }
