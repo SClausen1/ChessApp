@@ -6,8 +6,7 @@ import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
  
-  <Game 
-  player={1}
+  <Game player = {1}
   />,
   document.getElementById('root')
 );

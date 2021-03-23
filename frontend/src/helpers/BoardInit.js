@@ -6,7 +6,7 @@ import Queen from '../pieces/Queen';
 import Rook from '../pieces/Rook';
 
 export default function boardInit(player){
-    const squares = Array(64).fill(null);
+    let squares = Array(64).fill(null);
     for(let i = 0; i<8; i++){
         squares[8+i] = new Pawn(1);
         squares[48+i] = new Pawn(2);

@@ -1,16 +1,14 @@
 import React from 'react';
-
-import '../index.css';
 import Board from './Board.js';
 import boardInit from '../helpers/BoardInit';
 
 export default class Game extends React.Component {
-  constructor(currentPlayer) {
+  constructor(props) {
     super();
-    // you need a second player for this model to work. Board rotates but thats a feature not a bug
+    
     this.state = {
-      squares: boardInit(currentPlayer),
-      player: currentPlayer,
+      squares: boardInit(props.player),
+      player: props.player,
       history: ['NewGame'],
       souceClick: -1,
       playerTurn : 1,
@@ -27,9 +25,11 @@ export default class Game extends React.Component {
     const player = this.state.player;
     const opponent =( player === 1 ? 2 : 1);
     const srcPiece = squares[src];
-
-    if(src === -1){
-      if(player=== squares[i].player){
+    if(src === -1 && squares[i] == null){
+      return;
+    }
+    else if(src === -1){
+      if(player === squares[i].player){
         squares[i].style = ({...squares[i].style, backgroundColor: "RGB(111,143,114)" }); // Emerald from http://omgchess.blogspot.com/2015/09/chess-board-color-schemes.html
         this.setState({souceClick : i});
       }
@@ -40,7 +40,8 @@ export default class Game extends React.Component {
       
       squares[src].style = { ...squares[src].style, backgroundColor: "" };
      
-      if(srcPiece.isMovePossible(src, i) && pathIsClear(squares, src, dest) && !isMate(squares.splice(src,1,null), opponent)){
+      if(srcPiece.isMovePossible(src, i) && pathIsClear(squares, src, dest)){
+        squares[src] = srcPiece;
         //check if castle is possible
         if(srcPiece.type === 'ki'&& Math.abs(src - dest) > 1 &&srcPiece){
           //check if castle is possible, king is not in check ,intermediate squares are safe and unocupied, niether piece has moved
@@ -48,18 +49,18 @@ export default class Game extends React.Component {
 
         //checks for en passant
         else if(srcPiece.type === 'p' &&( (dest % 7=== 0 || dest % 9 === 0) && !squares[dest]) ){
-          var lastMove = this.state.history[this.state.history.length - 1];
-          if(this.player === 1 && squares[dest + 8].type === 'p'){
+          
+          if(this.state.player === 1 && squares[dest + 8].type === 'p' && dest/8 === 6){
             if(squares[dest + 8].firstMove === 2){
               squares[dest + 8] = null;
-              squares[dest] = i;
+              squares[dest] = squares[i];
               squares[i] = null;
             }
           }
-          else if(this.player === 2 && squares[dest - 8].type === 'p'){
+          else if(this.state.player === 2 && squares[dest - 8].type === 'p' && dest/8 === 1){
             if(squares[dest-8].firstMove === 2){
               squares[dest - 8] = null;
-              squares[dest] = i;
+              squares[dest] = squares[i];
               squares[i] = null;
             }
           }
@@ -71,7 +72,7 @@ export default class Game extends React.Component {
         }
 
         //takes a peice
-        else if(squares[i].player === this.state.player){
+        else if(squares[i] && squares[i].player === this.state.player){
           // add i square piece to fallen soldiers
           squares[i] = srcPiece;
           squares[this.state.souceClick] = null;
@@ -81,7 +82,7 @@ export default class Game extends React.Component {
         //just move
         else{
           squares[i] = srcPiece;
-          squares[this.state.souceClick] = null;
+          squares[src] = null;
         }
         var moveName = srcPiece.type.concat(algebreicNotation(i));
         if(isCheck(squares, player)){
@@ -94,7 +95,7 @@ export default class Game extends React.Component {
 
       
       this.setState(oldState => ({
-        squares,
+        squares: squares,
         player: opponent,
         history : [...oldState.history , moveName],
         souceClick : -1,
@@ -155,7 +156,7 @@ function getKingPosition(squares, player){
   return squares.reduce( (acc, curr, i) => acc || (curr && curr.player === player && curr.type === 'ki' && i), null);  
 }
 function pathIsClear(squares, src, dest){
-  if(squares.src.type === 'kn'){
+  if(squares[src].type === 'kn'){
     return true;
   }
   var distance = Math.abs(src-dest);
@@ -223,7 +224,7 @@ function algebreicNotation(i){
   return String(col).concat(String(row));
 }
 
-module.exports = {
+export {
   getKingPosition,
   isCheck,
   isMate,

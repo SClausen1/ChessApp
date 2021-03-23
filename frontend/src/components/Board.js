@@ -1,12 +1,10 @@
 import React from 'react';
 
-import '../index.css';
 import Square from './Square.js';
 
 
 export default class Board extends React.Component {
     renderSquare(i,shade){
-        console.log(this.props.squares[i])
         return <Square  
             key ={i}
             keyVal = {i}
