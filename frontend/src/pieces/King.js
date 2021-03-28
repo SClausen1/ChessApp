@@ -6,7 +6,8 @@ export default class King extends Piece{
     }
 
     isMovePossible(src, dest) {
-        if(Math.abs(dest - src) === 1 || Math.abs(dest - src) === 1 ){
+        let dist = Math.abs(dest - src)
+        if(dist === 1 || ((dest/8 != src/8) && (dist === 7 || dist === 9 || dist === 8))){
             return true;
         }
         return false;

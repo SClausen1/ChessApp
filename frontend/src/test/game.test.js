@@ -12,9 +12,16 @@ const squares2 = boardInit();
 
 
 
-test('player 1 king at position 4', () => {
+test('King starting position', () => {
   expect(getKingPosition(squares, 1)).toBe(4);
+  expect(getKingPosition(squares, 2)).toBe(60);
 });
+
+test('check function pathIsClear', () => {
+  expect(pathIsClear(squares, 4, 12)).toBe(false);
+  expect(pathIsClear(squares, 12,20)).toBe(true);
+});
+
 
 test('Square 4 is e1', () => {
   expect(algebreicNotation(4)).toBe('e1');
@@ -22,5 +29,5 @@ test('Square 4 is e1', () => {
 
 
 test('squares immutable', () => {
-  expect(squares).toStrictEqual(squares2);
+  expect(squares).toStrictEqual(boardInit());
 });

@@ -161,8 +161,10 @@ function pathIsClear(squares, src, dest){
   }
   var distance = Math.abs(src-dest);
   var start = Math.min(src,dest);
+  var end = Math.max(src,dest);
+  // checks diag moves
   if((src - dest) % 9 === 0){
-    for(let i = 1;( i * 9 + start) < 64; i++){
+    for(let i = 1;( i * 9 + start) <= end; i++){
       if(squares[start+i * 9]){
         return false;
       }
@@ -170,21 +172,23 @@ function pathIsClear(squares, src, dest){
     return true;
   }
   else if((src - dest) % 7 === 0){
-    for(let i = 1;( i * 7 + start) < 64; i++){
+    for(let i = 1;( i * 7 + start) <= end; i++){
       if(squares[start+i * 7]){
         return false;
       }
     }
     return true;
   }
+  // checks vertical moves
   else if((src - dest) % 8 === 0){
-    for(let i = 1;( i * 8 + start) < 64; i++){
-      if(squares[start+i * 8]){
+    for(let i = 1;( i * 8 + start) <= end ; i++){
+      if(squares[start+i * 8] != null){
         return false;
       }
     }
     return true;
   }
+  //checks horizontal moves
   else if(Math.floor(src/8) ===  Math.floor(dest / 8 )){
     for(let i = 1; i < distance; i++){
       if(squares[start+i]){

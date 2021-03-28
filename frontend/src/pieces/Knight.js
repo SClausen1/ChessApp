@@ -6,7 +6,9 @@ export default class Knight extends Piece{
     }
 
     isMovePossible(src, dest) {
-        if(Math.abs(src-dest) - 15===0 || Math.abs(src-dest) - 17===0 || Math.abs(src-dest) - 6===0 || Math.abs(src-dest) - 10===0){
+        let dist = Math.abs(src-dest);
+        let rows = Math.abs( Math.floor(src/8) - Math.floor(dest/8));
+        if( ((dist === 15 ||dist === 17 ) && rows ===2 ) || (( dist ===6 || dist===10) && rows ===1) ){
             return true;
         }
         return false;
